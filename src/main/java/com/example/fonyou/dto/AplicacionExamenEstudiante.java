@@ -18,5 +18,5 @@ public class AplicacionExamenEstudiante {
 	private Integer idAplicacionExamen;
 	@NotNull
 	private Integer idEstudiante;
-	
+	private Integer puntuacion;
 }

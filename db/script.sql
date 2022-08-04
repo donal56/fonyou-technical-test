@@ -1,3 +1,6 @@
+CREATE DATABASE fonyou_technical_test;
+USE fonyou_technical_test;
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -8,7 +11,7 @@ DROP TABLE IF EXISTS aplicaciones_examenes;
 CREATE TABLE aplicaciones_examenes (
     id_aplicacion_examen INT(11) PRIMARY KEY AUTO_INCREMENT,
     id_examen INT(11) NOT NULL,
-    fecha_aplicacion DATE NOT NULL,
+    fecha_aplicacion DATETIME NOT NULL,
     INDEX ix_aplicacion_examen_id_examen(id_examen) USING BTREE,
     CONSTRAINT fk_aplicacion_examen_id_examen FOREIGN KEY(id_examen) REFERENCES examenes(id_examen) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB ROW_FORMAT = Dynamic;
@@ -21,11 +24,12 @@ CREATE TABLE aplicaciones_examenes_estudiantes (
     id_aplicacion_examen_estudiante INT(11) PRIMARY KEY AUTO_INCREMENT,
     id_aplicacion_examen INT(11) NOT NULL,
     id_estudiante INT(11) NOT NULL,
-    UNIQUE INDEX ix_aplicacion_examen_estudiante (id_aplicacion_examen, id_estudiante) USING BTREE,
+    puntuacion INT(11),
+    fecha_aplicacion DATETIME,
+    UNIQUE INDEX ux_aplicacion_examen_estudiante (id_aplicacion_examen, id_estudiante) USING BTREE,
     CONSTRAINT fk_aplicacion_examen_estudiante_id_aplicacion_examen FOREIGN KEY(id_aplicacion_examen) REFERENCES aplicaciones_examenes(id_aplicacion_examen) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_aplicacion_examen_estudiante_id_estudiante FOREIGN KEY(id_estudiante) REFERENCES estudiantes(id_estudiante) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB ROW_FORMAT = Dynamic;
-
 
 -- ----------------------------
 -- Estructura de la tabla <aplicaciones_examenes_respuestas>
@@ -56,7 +60,7 @@ CREATE TABLE estudiantes (
     fecha_nacimiento DATE NOT NULL,
     edad INT(11) NOT NULL,
     ciudad VARCHAR(255) NOT NULL,
-    zona_horaria VARCHAR(32) NOT NULL
+    zona_horaria VARCHAR(127) NOT NULL
 ) ENGINE = InnoDB ROW_FORMAT = Dynamic;
 
 -- ----------------------------

@@ -20,7 +20,7 @@ public class AplicacionExamen {
 	@NotNull
 	private Integer idExamen;
 	@NotNull
-	private Date fechaAplicacion;
+	private Date fechaAplicacion;	//UTC
 	private List<AplicacionExamenEstudiante> estudiantes;
 	
 }

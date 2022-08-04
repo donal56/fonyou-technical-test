@@ -1,5 +1,7 @@
 package com.example.fonyou.dto;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -20,5 +22,6 @@ public class Examen {
 	private String examen;
 	@NotNull
 	private Integer puntajeTotal;
+	private List<ExamenPregunta> preguntas;
 	
 }

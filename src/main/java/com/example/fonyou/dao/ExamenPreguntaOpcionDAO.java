@@ -1,8 +1,8 @@
 package com.example.fonyou.dao;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.example.fonyou.dto.ExamenPreguntaOpcion;
@@ -12,12 +12,16 @@ import com.example.fonyou.dto.ExamenPreguntaOpcion;
  *
  */
 @Repository
-public class ExamenPreguntaOpcionDAO {
+public class ExamenPreguntaOpcionDAO extends BaseDAO {
 	
-	@Autowired
-	private DataSource jdbcTemplate;
+	public Integer insert(ExamenPreguntaOpcion examenPreguntaOpcion) {
 
-	public Boolean insert(ExamenPreguntaOpcion examenPreguntaOpcion) {
-		return true;
+		SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(examenPreguntaOpcion);
+		KeyHolder keyHolder = this.simpleJdbcInsert
+				            .withTableName("examenes_preguntas_opciones")
+				            .usingGeneratedKeyColumns("id_examen_pregunta_opcion")
+							.executeAndReturnKeyHolder(sqlParameterSource);
+		
+		return keyHolder.getKey().intValue();
 	}
 }
