@@ -104,3 +104,94 @@ CREATE TABLE examenes_preguntas_opciones (
 ) ENGINE = InnoDB ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Triggers
+-- ----------------------------
+
+DELIMITER $$
+CREATE TRIGGER tbi_estudiantes
+BEFORE INSERT
+ON estudiantes FOR EACH ROW
+BEGIN
+	SET NEW.edad = TIMESTAMPDIFF(YEAR, NEW.fecha_nacimiento, CURDATE());
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE TRIGGER tbu_estudiantes
+BEFORE UPDATE
+ON estudiantes FOR EACH ROW
+BEGIN
+	SET NEW.edad = TIMESTAMPDIFF(YEAR, NEW.fecha_nacimiento, CURDATE());
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER tbi_examenes_preguntas_opciones
+BEFORE INSERT
+ON examenes_preguntas_opciones FOR EACH ROW
+BEGIN
+
+	IF NEW.correcta = 1 
+		AND EXISTS(SELECT 1 FROM examenes_preguntas_opciones 
+			WHERE id_examen_pregunta = NEW.id_examen_pregunta AND correcta = 1) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se adminte una opción correcta';
+	END IF;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER tbu_examenes_preguntas_opciones
+BEFORE UPDATE
+ON examenes_preguntas_opciones FOR EACH ROW
+BEGIN
+
+	IF NEW.correcta = 1 
+		AND EXISTS(SELECT 1 FROM examenes_preguntas_opciones 
+			WHERE id_examen_pregunta = NEW.id_examen_pregunta AND correcta = 1) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se adminte una opción correcta';
+	END IF;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER tbi_aplicaciones_examenes_estudiantes
+BEFORE INSERT
+ON aplicaciones_examenes_estudiantes FOR EACH ROW
+BEGIN
+	DECLARE vFechaAplicacion DATE;
+	DECLARE vZonaHoraria VARCHAR(255);
+	
+	SELECT fecha_aplicacion INTO vFechaAplicacion
+	FROM aplicaciones_examenes 
+	WHERE id_aplicacion_examen = NEW.id_aplicacion_examen;
+	
+	SELECT zona_horaria INTO vZonaHoraria
+	FROM estudiantes 
+	WHERE id_estudiante = NEW.id_estudiante;
+	
+	SET NEW.fecha_aplicacion = CONVERT_TZ(vFechaAplicacion, '+00:00', vZonaHoraria);
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER tbu_aplicaciones_examenes_estudiantes
+BEFORE UPDATE
+ON aplicaciones_examenes_estudiantes FOR EACH ROW
+BEGIN
+	DECLARE vFechaAplicacion DATE;
+	DECLARE vZonaHoraria VARCHAR(255);
+	
+	SELECT fecha_aplicacion INTO vFechaAplicacion
+	FROM aplicaciones_examenes 
+	WHERE id_aplicacion_examen = NEW.id_aplicacion_examen;
+	
+	SELECT zona_horaria INTO vZonaHoraria
+	FROM estudiantes 
+	WHERE id_estudiante = NEW.id_estudiante;
+	
+	SET NEW.fecha_aplicacion = CONVERT_TZ(vFechaAplicacion, '+00:00', vZonaHoraria);
+END $$
+DELIMITER ;
