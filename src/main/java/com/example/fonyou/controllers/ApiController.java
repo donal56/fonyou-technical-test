@@ -1,7 +1,8 @@
 package com.example.fonyou.controllers;
 
 import java.util.List;
-import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.fonyou.dto.AplicacionExamen;
+import com.example.fonyou.dto.AplicacionExamenEstudiante;
+import com.example.fonyou.dto.AplicacionExamenRespuesta;
 import com.example.fonyou.dto.Estudiante;
 import com.example.fonyou.dto.Examen;
 import com.example.fonyou.dto.Respuesta;
@@ -19,8 +22,6 @@ import com.example.fonyou.services.AplicacionesExamenesEstudiantesService;
 import com.example.fonyou.services.AplicacionesExamenesRespuestasService;
 import com.example.fonyou.services.AplicacionesExamenesService;
 import com.example.fonyou.services.EstudiantesService;
-import com.example.fonyou.services.ExamenesPreguntasOpcionesService;
-import com.example.fonyou.services.ExamenesPreguntasService;
 import com.example.fonyou.services.ExamenesService;
 
 /**
@@ -43,17 +44,6 @@ public class ApiController {
 	private AplicacionesExamenesService aplicacionesExamenesService;
 	
 	/**
-	 * Recopilar las respuestas de un estudiante. Se debe poder recopilar todas las respuestas 
-	 * de un estudiante en un examen que se le ha asignado.
-	 * @param examen
-	 * @return
-	 */
-	@RequestMapping(path = "/aplicaciones/examenes/{idAplicacionExamen}/{idEstudiante}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<Map<String, Object>> crearExamen(@PathVariable Integer idAplicacionExamen, @PathVariable Integer idEstudiante) {
-		return aplicacionesExamenesRespuestasService.findAllByAplicacionExamenEstudiante(idAplicacionExamen, idEstudiante);
-	}
-	
-	/**
 	 * Crear un examen. Este se compone de un conjunto de preguntas con 4 opciones, 1 opción 
 	 * correcta y un puntaje por cada pregunta que en total deben sumar 100 puntos (la nota 
 	 * total del examen).
@@ -61,7 +51,7 @@ public class ApiController {
 	 * @return 
 	 */
 	@RequestMapping(path = "/examenes/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Respuesta crearExamen(@RequestBody Examen examen) {
+	public Respuesta crearExamen(@RequestBody @Valid Examen examen) {
 		Respuesta respuesta = new Respuesta();
 		Integer idExamen = examenesService.save(examen);
 		
@@ -77,7 +67,7 @@ public class ApiController {
 	 * @return
 	 */
 	@RequestMapping(path = "/estudiantes/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Respuesta crearEstudiante(@RequestBody Estudiante estudiante) {
+	public Respuesta crearEstudiante(@RequestBody @Valid Estudiante estudiante) {
 		Respuesta respuesta = new Respuesta();
 		Integer idEstudiante = estudiantesService.save(estudiante);
 		
@@ -94,7 +84,7 @@ public class ApiController {
 	 * @return
 	 */
 	@RequestMapping(path = "/aplicaciones/examenes/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Respuesta crearEstudiante(@RequestBody AplicacionExamen aplicacionExamen) {
+	public Respuesta crearEstudiante(@RequestBody @Valid AplicacionExamen aplicacionExamen) {
 		Respuesta respuesta = new Respuesta();
 		Integer idAplicacionExamen = aplicacionesExamenesService.save(aplicacionExamen);
 		
@@ -104,15 +94,27 @@ public class ApiController {
 	}
 	
 	/**
+	 * Recopilar las respuestas de un estudiante. Se debe poder recopilar todas las respuestas 
+	 * de un estudiante en un examen que se le ha asignado.
+	 * @param examen
+	 * @return
+	 */
+	@RequestMapping(path = "/aplicaciones/examenes/recopilar/{idAplicacionExamenEstudiante}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Respuesta crearExamen(@PathVariable Integer idAplicacionExamenEstudiante, @RequestBody @Valid List<AplicacionExamenRespuesta> respuestas) {
+		aplicacionesExamenesRespuestasService.saveMultiple(respuestas, idAplicacionExamenEstudiante);
+		return new Respuesta().setExito(true);
+	}
+	
+	/**
 	 * Calificar los exámenes. Una vez recibida las respuestas de un estudiante se deberá 
 	 * entregar la calificación de este
 	 * @param idAplicacionExamenEstudiante
 	 * @return
 	 */
-	@RequestMapping(path = "/aplicaciones/examenes/estudiantes/calificar/{idAplicacionExamenEstudiante}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Respuesta crearEstudiante(@PathVariable Integer idAplicacionExamenEstudiante) {
+	@RequestMapping(path = "/aplicaciones/examenes/estudiantes/calificar", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Respuesta crearEstudiante(@RequestBody AplicacionExamenEstudiante aplicacionExamenEstudiante) {
 		Respuesta respuesta = new Respuesta();
-		Integer calificacion = aplicacionesExamenesEstudiantesService.calificar(idAplicacionExamenEstudiante);
+		Integer calificacion = aplicacionesExamenesEstudiantesService.calificar(aplicacionExamenEstudiante.getIdAplicacionExamenEstudiante());
 		
 		return respuesta
 				.setExito(calificacion != null)

@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "92657c66-d7cc-4bfa-9823-b3e0b6162954",
+		"name": "FonYou Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22591677"
+	},
+	"item": [
+		{
+			"name": "Crear estudiante",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\" : \"Carlos Donaldo\",\r\n    \"apellidoPaterno\": \"Ramón\",\r\n    \"apellidoMaterno\": \"Gómez\",\r\n    \"fechaNacimiento\": \"1998-06-22\",\r\n    \"ciudad\": \"Villahermosa\",\r\n    \"zonaHoraria\": \"+05:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/estudiantes/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"estudiantes",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear examen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"examen\": \"Examen 1\",\r\n    \"puntajeTotal\": 100,\r\n    \"preguntas\": [{\r\n        \"orden\": 1,\r\n        \"pregunta\": \"¿Cuál ha sido el evento musical con más asistencia de la historia?\",\r\n        \"puntaje\": 25,\r\n        \"opciones\": [{\r\n            \"orden\": 1,\r\n            \"opcion\": \"Rod Steward en la Playa de Copacabana\",\r\n            \"correcta\": 1\r\n        }, {\r\n            \"orden\": 2,\r\n            \"inciso\": \"2\",\r\n            \"opcion\": \"Festival de Woodstock\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 3,\r\n            \"inciso\": \"3\",\r\n            \"opcion\": \"The Rolling Stones en Central Park\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 4,\r\n            \"inciso\": \"4\",\r\n            \"opcion\": \"Concierto benefico: Concert for Bangladesh\",\r\n            \"correcta\": 0\r\n        }]\r\n    }, {\r\n        \"orden\": 2,\r\n        \"pregunta\": \"¿Cuál fue el evento televisivo más visto de la historia?\",\r\n        \"puntaje\": 40,\r\n        \"opciones\": [{\r\n            \"orden\": 1,\r\n            \"opcion\": \"Hey Jude por The Beatles\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 2,\r\n            \"inciso\": \"2\",\r\n            \"opcion\": \"Funeral de Michael Jackson\",\r\n            \"correcta\": 1\r\n        }, {\r\n            \"orden\": 3,\r\n            \"inciso\": \"3\",\r\n            \"opcion\": \"Funeral de Lady Di\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 4,\r\n            \"inciso\": \"4\",\r\n            \"opcion\": \"Llegada del hombre a la luna\",\r\n            \"correcta\": 0\r\n        }]\r\n    }, {\r\n        \"orden\": 3,\r\n        \"pregunta\": \"¿Cuánto duro la guerra de los cien años?\",\r\n        \"puntaje\": 15,\r\n        \"opciones\": [{\r\n            \"orden\": 1,\r\n            \"opcion\": \"100 años\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 2,\r\n            \"inciso\": \"2\",\r\n            \"opcion\": \"106 años\",\r\n            \"correcta\": 1\r\n        }, {\r\n            \"orden\": 3,\r\n            \"inciso\": \"3\",\r\n            \"opcion\": \"1 siglo\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 4,\r\n            \"inciso\": \"4\",\r\n            \"opcion\": \"99 años\",\r\n            \"correcta\": 0\r\n        }]\r\n    }, {\r\n        \"orden\": 4,\r\n        \"pregunta\": \"¿Cuál es el número de habitantes de México?\",\r\n        \"puntaje\": 20,\r\n        \"opciones\": [{\r\n            \"orden\": 1,\r\n            \"opcion\": \"300 millones\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 2,\r\n            \"inciso\": \"2\",\r\n            \"opcion\": \"98 millones\",\r\n            \"correcta\": 0\r\n        }, {\r\n            \"orden\": 3,\r\n            \"inciso\": \"3\",\r\n            \"opcion\": \"125 millones\",\r\n            \"correcta\": 1\r\n        }, {\r\n            \"orden\": 4,\r\n            \"inciso\": \"4\",\r\n            \"opcion\": \"240 millones\",\r\n            \"correcta\": 0\r\n        }]\r\n    }]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/examenes/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"examenes",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear aplicación de examen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idExamen\" : 1,\r\n    \"fechaAplicacion\" : \"2022-08-05 12:45\",\r\n    \"estudiantes\" : [{\r\n        \"idEstudiante\": 1\r\n    }]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/aplicaciones/examenes/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"aplicaciones",
+						"examenes",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Realizar examen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\r\n    \"idExamenPregunta\" : 1,\r\n    \"idExamenPreguntaOpcion\": 1\r\n}, {\r\n    \"idExamenPregunta\" : 2,\r\n    \"idExamenPreguntaOpcion\" : 5\r\n}, {\r\n    \"idExamenPregunta\" : 3,\r\n    \"idExamenPreguntaOpcion\" : 9\r\n}, {\r\n    \"idExamenPregunta\" : 4,\r\n    \"idExamenPreguntaOpcion\" : 13\r\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/aplicaciones/examenes/recopilar/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"aplicaciones",
+						"examenes",
+						"recopilar",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calificar examen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idAplicacionExamenEstudiante\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/aplicaciones/examenes/estudiantes/calificar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"aplicaciones",
+						"examenes",
+						"estudiantes",
+						"calificar"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

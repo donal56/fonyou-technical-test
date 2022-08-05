@@ -1,6 +1,10 @@
 package com.example.fonyou.dto;
 
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +18,10 @@ import lombok.Setter;
 public class AplicacionExamenEstudiante {
 
 	private Integer idAplicacionExamenEstudiante;
-	@NotNull
 	private Integer idAplicacionExamen;
 	@NotNull
 	private Integer idEstudiante;
 	private Integer puntuacion;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime fechaAplicacion;
 }

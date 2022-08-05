@@ -1,9 +1,11 @@
 package com.example.fonyou.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +22,9 @@ public class AplicacionExamen {
 	@NotNull
 	private Integer idExamen;
 	@NotNull
-	private Date fechaAplicacion;	//UTC
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime  fechaAplicacion;	//UTC
+	@NotNull
 	private List<AplicacionExamenEstudiante> estudiantes;
 	
 }

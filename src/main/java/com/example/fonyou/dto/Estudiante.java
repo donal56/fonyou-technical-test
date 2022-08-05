@@ -5,10 +5,15 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author Doni, 02/08/2022 23:10:48
  *
  */
+@Getter
+@Setter
 public class Estudiante {
 
 	private Integer idEstudiante;
@@ -22,7 +27,6 @@ public class Estudiante {
 	private String apellidoMaterno;
 	@NotNull
 	private Date fechaNacimiento;
-	@NotNull
 	private Integer edad;
 	@Size(max = 255)
 	@NotNull

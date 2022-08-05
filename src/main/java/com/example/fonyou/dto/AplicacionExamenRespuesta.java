@@ -14,7 +14,6 @@ import lombok.Setter;
 public class AplicacionExamenRespuesta {
 
 	private Integer idAplicacionExamenRespuesta;
-	@NotNull
 	private Integer idAplicacionExamenEstudiante;
 	@NotNull
 	private Integer idExamenPregunta;

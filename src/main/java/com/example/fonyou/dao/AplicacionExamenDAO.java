@@ -17,10 +17,9 @@ public class AplicacionExamenDAO extends BaseDAO {
 	public Integer insert(AplicacionExamen aplicacionExamen) {
 		
 		SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(aplicacionExamen);
-		KeyHolder keyHolder = this.simpleJdbcInsert
-				            .withTableName("aplicaciones_examenes")
-				            .usingGeneratedKeyColumns("id_aplicacion_examen")
-				            .executeAndReturnKeyHolder(sqlParameterSource);
+		KeyHolder keyHolder = prepareInsert("aplicaciones_examenes")
+					            .usingGeneratedKeyColumns("id_aplicacion_examen")
+					            .executeAndReturnKeyHolder(sqlParameterSource);
 
 		return keyHolder.getKey().intValue();
 	}

@@ -32,21 +32,20 @@ public class AplicacionExamenEstudianteDAO extends BaseDAO {
 	public Integer insert(AplicacionExamenEstudiante aplicacionEstudianteExamen) {
 
 		SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(aplicacionEstudianteExamen);
-		KeyHolder keyHolder = this.simpleJdbcInsert
-				            .withTableName("aplicaciones_examenes_estudiantes")
-				            .usingGeneratedKeyColumns("id_aplicacion_examen_estudiante", "puntuacion")
-				            .executeAndReturnKeyHolder(sqlParameterSource);
+		KeyHolder keyHolder = prepareInsert("aplicaciones_examenes_estudiantes")
+					            .usingGeneratedKeyColumns("id_aplicacion_examen_estudiante", "puntuacion")
+					            .executeAndReturnKeyHolder(sqlParameterSource);
 
 		return keyHolder.getKey().intValue();
 	}
 	
-	public Boolean updateCalificacion(Integer idAplicacionExamenEstudiante, Integer calificacion) {
-		String sql = 	"UPDATE aplicaciones_examenes_estudiantes SET calificacion = :calificacion " + 
+	public Boolean updateCalificacion(Integer idAplicacionExamenEstudiante, Integer puntuacion) {
+		String sql = 	"UPDATE aplicaciones_examenes_estudiantes SET puntuacion = :puntuacion " + 
 						"WHERE id_aplicacion_examen_estudiante = :id_aplicacion_examen_estudiante";
 		
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
 				.addValue("id_aplicacion_examen_estudiante", idAplicacionExamenEstudiante)
-				.addValue("calificacion", calificacion);
+				.addValue("puntuacion", puntuacion);
 		
 		Integer rows = this.namedParameterJdbcTemplate.update(sql, sqlParameterSource);
 		return rows == 1;

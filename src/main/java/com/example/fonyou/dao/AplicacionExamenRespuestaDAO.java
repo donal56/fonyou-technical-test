@@ -19,8 +19,12 @@ import com.example.fonyou.dto.AplicacionExamenRespuesta;
 public class AplicacionExamenRespuestaDAO extends BaseDAO {
 
 	public List<Map<String, Object>> findAllByAplicacionExamenEstudiante(Integer idAplicacionExamen, Integer idEstudiante) {
-		String sql = "SELECT aer.* FROM aplicaciones_examenes_respuestas aer " + 
+		String sql = "SELECT ep.examen_pregunta, epo.examen_pregunta_opcion, epo.correcta " + 
+						"FROM aplicaciones_examenes_respuestas aer " + 
 						"INNER JOIN aplicaciones_examenes_estudiantes aee ON aee.id_aplicacion_examen_estudiante = aer.id_aplicacion_examen_estudiante " + 
+						"INNER JOIN examenes_preguntas ep ON ep.id_examen_pregunta = aer.id_examen_pregunta " + 
+						"INNER JOIN examenes_preguntas_opciones epo ON epo.id_examen_pregunta_opcion = aer.id_examen_pregunta_opcion " + 
+						" 	AND epo.id_examen_pregunta = aer.id_examen_pregunta " + 
 						"WHERE aee.id_aplicacion_examen = :id_aplicacion_examen " + 
 							"AND aee.id_estudiante = :id_estudiante";
 		
@@ -34,11 +38,16 @@ public class AplicacionExamenRespuestaDAO extends BaseDAO {
 	public Integer insert(AplicacionExamenRespuesta aplicacionExamenRespuesta) {
 
 		SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(aplicacionExamenRespuesta);
-		KeyHolder keyHolder = this.simpleJdbcInsert
-				            .withTableName("aplicaciones_examenes_respuestas")
-				            .usingGeneratedKeyColumns("id_aplicacion_examen_respuesta")
-							.executeAndReturnKeyHolder(sqlParameterSource);
+		KeyHolder keyHolder = prepareInsert("aplicaciones_examenes_respuestas")
+					            .usingGeneratedKeyColumns("id_aplicacion_examen_respuesta")
+								.executeAndReturnKeyHolder(sqlParameterSource);
 
 		return keyHolder.getKey().intValue();
+	}
+	
+	public void validar(Integer idAplicacionExamenEstudiante) {
+		String sql = "SELECT validar_respuestas(:idAplicacionExamenEstudiante)";
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource().addValue("idAplicacionExamenEstudiante", idAplicacionExamenEstudiante);
+		this.namedParameterJdbcTemplate.queryForObject(sql, sqlParameterSource, Integer.class);
 	}
 }

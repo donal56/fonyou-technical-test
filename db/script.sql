@@ -106,6 +106,65 @@ CREATE TABLE examenes_preguntas_opciones (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ----------------------------
+-- Funciones
+-- ----------------------------
+DELIMITER $$   
+CREATE FUNCTION validar_examen(pIdExamen INT) 
+RETURNS INTEGER
+DETERMINISTIC
+BEGIN   
+	DECLARE vPuntajePreguntas INT(11);  
+	DECLARE vPuntajeExamen INT(11);  
+	
+	SELECT SUM(puntaje) INTO vPuntajePreguntas
+	FROM examenes_preguntas 
+	WHERE id_examen = pIdExamen;
+	
+	SELECT puntaje_total INTO vPuntajeExamen 
+	FROM examenes 
+	WHERE id_examen = pIdExamen;
+	
+	IF COALESCE(vPuntajePreguntas, -1) != vPuntajeExamen THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ajuste correctamente las preguntas para alcanzar el puntaje total del examen';
+	END IF;
+	
+	RETURN 1;
+END $$
+DELIMITER ;
+
+DELIMITER $$   
+CREATE FUNCTION validar_respuestas(pIdAplicacionExamenEstudiante INT) 
+RETURNS INTEGER
+DETERMINISTIC
+BEGIN   
+	DECLARE vPreguntasTotales INT(11);  
+	DECLARE vPreguntasConsistentes INT(11);  
+	
+	SELECT COUNT(*) INTO vPreguntasConsistentes
+	FROM aplicaciones_examenes_respuestas aer 
+	INNER JOIN aplicaciones_examenes_estudiantes aee ON aee.id_aplicacion_examen_estudiante = aer.id_aplicacion_examen_estudiante 
+	INNER JOIN examenes_preguntas_opciones epo ON epo.id_examen_pregunta_opcion = aer.id_examen_pregunta_opcion 
+		AND epo.id_examen_pregunta = aer.id_examen_pregunta 
+	WHERE aer.id_aplicacion_examen_estudiante = pIdAplicacionExamenEstudiante;
+	
+	SELECT COUNT(*) INTO vPreguntasTotales
+	FROM examenes_preguntas
+	WHERE id_examen = (
+		SELECT id_examen 
+		FROM aplicaciones_examenes_estudiantes aee
+		INNER JOIN aplicaciones_examenes ae ON ae.id_aplicacion_examen = aee.id_aplicacion_examen
+		WHERE id_aplicacion_examen_estudiante = pIdAplicacionExamenEstudiante
+	);
+	
+	IF COALESCE(vPreguntasConsistentes, -1) != COALESCE(vPreguntasTotales, -2) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se respondieron todas las preguntas';
+	END IF;
+	
+	RETURN 1;
+END $$
+DELIMITER ;
+
+-- ----------------------------
 -- Triggers
 -- ----------------------------
 
@@ -134,10 +193,14 @@ BEFORE INSERT
 ON examenes_preguntas_opciones FOR EACH ROW
 BEGIN
 
+	IF NEW.inciso IS NULL THEN
+		SET NEW.inciso = NEW.orden || '. ';
+	END IF;
+
 	IF NEW.correcta = 1 
 		AND EXISTS(SELECT 1 FROM examenes_preguntas_opciones 
 			WHERE id_examen_pregunta = NEW.id_examen_pregunta AND correcta = 1) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se adminte una opción correcta';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se admite una opción correcta';
 	END IF;
 END $$
 DELIMITER ;
@@ -148,10 +211,14 @@ BEFORE UPDATE
 ON examenes_preguntas_opciones FOR EACH ROW
 BEGIN
 
+	IF NEW.inciso IS NULL THEN
+		SET NEW.inciso = NEW.orden || '. ';
+	END IF;
+
 	IF NEW.correcta = 1 
 		AND EXISTS(SELECT 1 FROM examenes_preguntas_opciones 
 			WHERE id_examen_pregunta = NEW.id_examen_pregunta AND correcta = 1) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se adminte una opción correcta';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Solo se admite una opción correcta';
 	END IF;
 END $$
 DELIMITER ;
@@ -161,18 +228,11 @@ CREATE TRIGGER tbi_aplicaciones_examenes_estudiantes
 BEFORE INSERT
 ON aplicaciones_examenes_estudiantes FOR EACH ROW
 BEGIN
-	DECLARE vFechaAplicacion DATE;
-	DECLARE vZonaHoraria VARCHAR(255);
-	
-	SELECT fecha_aplicacion INTO vFechaAplicacion
-	FROM aplicaciones_examenes 
-	WHERE id_aplicacion_examen = NEW.id_aplicacion_examen;
-	
-	SELECT zona_horaria INTO vZonaHoraria
-	FROM estudiantes 
-	WHERE id_estudiante = NEW.id_estudiante;
-	
-	SET NEW.fecha_aplicacion = CONVERT_TZ(vFechaAplicacion, '+00:00', vZonaHoraria);
+	SET NEW.fecha_aplicacion = CONVERT_TZ(
+		(SELECT fecha_aplicacion FROM aplicaciones_examenes WHERE id_aplicacion_examen = NEW.id_aplicacion_examen), 
+		'+00:00', 
+		(SELECT zona_horaria FROM estudiantes WHERE id_estudiante = NEW.id_estudiante)
+	);
 END $$
 DELIMITER ;
 
@@ -181,17 +241,33 @@ CREATE TRIGGER tbu_aplicaciones_examenes_estudiantes
 BEFORE UPDATE
 ON aplicaciones_examenes_estudiantes FOR EACH ROW
 BEGIN
-	DECLARE vFechaAplicacion DATE;
-	DECLARE vZonaHoraria VARCHAR(255);
-	
-	SELECT fecha_aplicacion INTO vFechaAplicacion
-	FROM aplicaciones_examenes 
-	WHERE id_aplicacion_examen = NEW.id_aplicacion_examen;
-	
-	SELECT zona_horaria INTO vZonaHoraria
-	FROM estudiantes 
-	WHERE id_estudiante = NEW.id_estudiante;
-	
-	SET NEW.fecha_aplicacion = CONVERT_TZ(vFechaAplicacion, '+00:00', vZonaHoraria);
+	SET NEW.fecha_aplicacion = CONVERT_TZ(
+		(SELECT fecha_aplicacion FROM aplicaciones_examenes WHERE id_aplicacion_examen = NEW.id_aplicacion_examen), 
+		'+00:00', 
+		(SELECT zona_horaria FROM estudiantes WHERE id_estudiante = NEW.id_estudiante)
+	);
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER tbi_examenes_preguntas
+BEFORE INSERT
+ON examenes_preguntas FOR EACH ROW
+BEGIN
+	IF NEW.inciso IS NULL THEN
+		SET NEW.inciso = NEW.orden || '. ';
+	END IF;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE TRIGGER tbu_examenes_preguntas
+BEFORE UPDATE
+ON examenes_preguntas FOR EACH ROW
+BEGIN
+	IF NEW.inciso IS NULL THEN
+		SET NEW.inciso = NEW.orden || '. ';
+	END IF;
 END $$
 DELIMITER ;

@@ -1,8 +1,6 @@
-/**
- * 
- */
 package com.example.fonyou.dao;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +19,15 @@ public class BaseDAO {
 
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	protected SimpleJdbcInsert simpleJdbcInsert;
 	
-	public BaseDAO() {
+	@PostConstruct
+	private void initialize() {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-		this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+	}
+	
+	protected SimpleJdbcInsert prepareInsert(String tabla) {
+		return new SimpleJdbcInsert(jdbcTemplate)
+	            .withTableName(tabla);
 	}
 }

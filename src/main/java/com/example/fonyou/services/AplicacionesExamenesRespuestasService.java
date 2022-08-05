@@ -25,7 +25,11 @@ public class AplicacionesExamenesRespuestasService {
 	}
 	
 	@Transactional
-	public Integer save(AplicacionExamenRespuesta aplicacionExamenRespuesta) {
-		return aplicacionExamenRespuestaDAO.insert(aplicacionExamenRespuesta);
+	public void saveMultiple(List<AplicacionExamenRespuesta> respuestas, Integer idAplicacionExamenEstudiante) {
+		for(AplicacionExamenRespuesta respuesta : respuestas) {
+			respuesta.setIdAplicacionExamenEstudiante(idAplicacionExamenEstudiante);
+			aplicacionExamenRespuestaDAO.insert(respuesta);
+		}
+		aplicacionExamenRespuestaDAO.validar(idAplicacionExamenEstudiante);
 	}
 }

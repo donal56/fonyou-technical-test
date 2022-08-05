@@ -9,7 +9,7 @@ import com.example.fonyou.dao.ExamenPreguntaDAO;
 import com.example.fonyou.dao.ExamenPreguntaOpcionDAO;
 import com.example.fonyou.dto.Examen;
 import com.example.fonyou.dto.ExamenPregunta;
-import com.example.fonyou.dto.ExamenPreguntaOpcion;s
+import com.example.fonyou.dto.ExamenPreguntaOpcion;
 
 /**
  * @author Doni, 03/08/2022 21:16:16
@@ -38,6 +38,8 @@ public class ExamenesService {
 				examenPreguntaOpcionDAO.insert(opcion);
 			}
 		}
+		
+		examenDAO.validar(idExamen);
 		
 		return idExamen;
 	}
